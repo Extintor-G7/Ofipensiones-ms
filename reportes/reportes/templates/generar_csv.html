@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generar Reporte CSV</title>
+</head>
+<body>
+    <h1>Generar Reporte de Facturas</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="idColegio">ID del Colegio:</label>
+        <input type="text" id="idColegio" name="idColegio" required>
+        <button type="submit">Generar y Descargar CSV</button>
+    </form>
+</body>
+</html>
