@@ -5,8 +5,10 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 import requests
 import json
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
+@csrf_exempt
 def FacturaCreate(request):
     if request.method == 'POST':
         data = request.body.decode('utf-8')

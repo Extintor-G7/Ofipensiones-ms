@@ -5,7 +5,7 @@ from database import PyObjectId
 
 class Pago(BaseModel):
     monto: int = Field(...)
-    fecha: date = Field(...)
+    fecha: str = Field(...)
     idColegio: int = Field(...)
     model_config = ConfigDict(
         populate_by_name=True,

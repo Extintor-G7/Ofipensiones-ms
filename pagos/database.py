@@ -6,13 +6,7 @@ client = motor.motor_asyncio.AsyncIOMotorClient(
     "mongodb://localhost:27017"
 )
 db = client.get_database("ofipensiones_db")
-places_collection = db.get_collection("pagos")
-
-
-async def set_places_db():
-    # Creates a unique index on the code field
-    await places_collection.create_index("code", unique=True)
-
+places_collection = db.get_collection("pagos1")
 
 # Represents an ObjectId field in the database.
 PyObjectId = Annotated[str, BeforeValidator(str)]

@@ -11,10 +11,6 @@ def create_app():
         redoc_url=None,
     )
 
-    @app.on_event("startup")
-    async def on_startup():
-        await database.set_places_db()
-
     app.include_router(views.router)
 
     return app
