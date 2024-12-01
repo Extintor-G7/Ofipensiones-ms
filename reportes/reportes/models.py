@@ -1,5 +1,6 @@
 import csv
 import os
+import time
 from cryptography.fernet import Fernet
 import requests
 from django.db import models
@@ -8,7 +9,7 @@ class Reporte(models.Model):
     id = models.AutoField(primary_key=True)
     facturas = models.CharField(max_length=255)
 
-    def obtener_facturas(self, id_colegio,key):
+    def obtener_facturas(self, id_colegio,key,timestamp):
         url = "http://127.0.0.1:8001/facturas/"
         params = {'idColegio': id_colegio}
 
@@ -17,11 +18,11 @@ class Reporte(models.Model):
         if response.status_code == 200:
             facturas = response.json()
             # Pass the key here to avoid creating new files
-            self.generar_csv_encriptado(facturas, id_colegio,key)
+            self.generar_csv_encriptado(facturas, id_colegio,key,timestamp)
         else:
             raise Exception("Error al obtener facturas")
 
-    def generar_csv_encriptado(self, facturas, id_colegio, key):
+    def generar_csv_encriptado(self, facturas, id_colegio, key,timestamp):
         # Use the passed encryption key
         cipher_suite = Fernet(key)
 
@@ -29,7 +30,7 @@ class Reporte(models.Model):
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
 
-        archivo_csv = os.path.join(output_dir, f"reporte_{id_colegio}.csv")
+        archivo_csv = os.path.join(output_dir, f"reporte_{timestamp}.csv")
 
         # Create the CSV file with the invoices
         with open(archivo_csv, mode='w', newline='') as file:
@@ -52,3 +53,37 @@ class Reporte(models.Model):
         os.remove(archivo_csv)
 
         print(f"Encrypted CSV saved as: {archivo_encriptado}")
+        
+        
+    def obtener_facturas2(self, id_colegio,timestamp):
+        url = "http://127.0.0.1:8001/facturas/"
+        params = {'idColegio': id_colegio}
+
+        response = requests.get(url, params=params)
+
+        if response.status_code == 200:
+            facturas = response.json()
+            # Pass the key here to avoid creating new files
+            self.generar_csv_sin_encriptar(facturas, id_colegio,timestamp)
+        else:
+            raise Exception("Error al obtener facturas")
+
+    def generar_csv_sin_encriptar(self, facturas, id_colegio,timestamp):
+        """
+    Generate a CSV file containing the invoices without encryption.
+    """
+
+        output_dir = 'reportes/reportesCsv'
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        archivo_csv = os.path.join(output_dir, f"reporte_{timestamp}.csv")
+
+         # Create the CSV file with the invoices
+        with open(archivo_csv, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['ID', 'Tipo', 'Precio', 'Fecha Pago', 'ID Colegio'])
+            for factura in facturas:
+                writer.writerow([factura['id'], factura['tipo'], factura['precio'], factura['fechaPago'], factura['idColegio']])
+
+        print(f"CSV saved as: {archivo_csv}")
