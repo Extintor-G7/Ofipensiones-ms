@@ -1,3 +1,5 @@
+resources:
+
 - name: msd-reportes-ms
   type: compute.v1.instance
   properties:
